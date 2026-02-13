@@ -1,27 +1,58 @@
 import { useState, useEffect } from 'react'
 import Particles from '../components/Particles'
 import MatrixBackground from '../components/MatrixBackground'
+import AuroraBackground from '../components/AuroraBackground'
+import StarfieldBackground from '../components/StarfieldBackground'
+import FirefliesBackground from '../components/FirefliesBackground'
+import WavesBackground from '../components/WavesBackground'
 import { ConfettiEffect } from '../components/ConfettiEffect'
 import CopyZoomCursor from '../components/CopyZoomCursor'
 
 // Import raw file content for copy functionality
 import ParticlesRaw from '../components/Particles.jsx?raw'
 import MatrixBgRaw from '../components/MatrixBackground.jsx?raw'
+import AuroraRaw from '../components/AuroraBackground.jsx?raw'
+import StarfieldRaw from '../components/StarfieldBackground.jsx?raw'
+import FirefliesRaw from '../components/FirefliesBackground.jsx?raw'
+import WavesRaw from '../components/WavesBackground.jsx?raw'
 import ConfettiRaw from '../components/ConfettiEffect.jsx?raw'
-import CopyZoomRaw from '../components/CopyZoomCursor.jsx?raw'
+
+const backgrounds = [
+  { id: 'particles', label: '✨ Particles', component: Particles, raw: null, bodyClass: '' },
+  { id: 'matrix', label: '💚 Matrix Rain', component: MatrixBackground, raw: null, bodyClass: 'matrix-bg' },
+  { id: 'aurora', label: '🌌 Aurora', component: AuroraBackground, raw: null, bodyClass: 'dark-bg' },
+  { id: 'starfield', label: '🚀 Starfield', component: StarfieldBackground, raw: null, bodyClass: 'dark-bg' },
+  { id: 'fireflies', label: '🔥 Fireflies', component: FirefliesBackground, raw: null, bodyClass: 'dark-bg' },
+  { id: 'waves', label: '🌊 Waves', component: WavesBackground, raw: null, bodyClass: 'dark-bg' },
+]
+
+// Map raw imports
+const rawFiles = {
+  particles: ParticlesRaw,
+  matrix: MatrixBgRaw,
+  aurora: AuroraRaw,
+  starfield: StarfieldRaw,
+  fireflies: FirefliesRaw,
+  waves: WavesRaw,
+}
 
 function App() {
-  const [isMatrix, setIsMatrix] = useState(false)
+  const [bgIndex, setBgIndex] = useState(0)
   const [confettiTrigger, setConfettiTrigger] = useState(false)
   const [copiedId, setCopiedId] = useState(null)
 
+  const currentBg = backgrounds[bgIndex]
+  const ActiveBackground = currentBg.component
+  const isDark = currentBg.bodyClass !== ''
+
   useEffect(() => {
-    if (isMatrix) {
-      document.body.classList.add('matrix-bg')
-    } else {
-      document.body.classList.remove('matrix-bg')
+    document.body.classList.remove('matrix-bg', 'dark-bg')
+    if (currentBg.bodyClass) {
+      document.body.classList.add(currentBg.bodyClass)
     }
-  }, [isMatrix])
+  }, [bgIndex])
+
+  const nextBg = () => setBgIndex((i) => (i + 1) % backgrounds.length)
 
   const handleConfetti = () => {
     setConfettiTrigger(false)
@@ -38,9 +69,13 @@ function App() {
   return (
     <>
       <style>{`
-        /* Matrix dark background */
+        /* Dark backgrounds */
         body.matrix-bg {
           background: linear-gradient(135deg, #0a0a0a 0%, #0d1117 50%, #010409 100%);
+          transition: background 0.5s ease;
+        }
+        body.dark-bg {
+          background: #000;
           transition: background 0.5s ease;
         }
 
@@ -54,8 +89,6 @@ function App() {
           align-items: center;
           gap: 0.5rem;
         }
-        .btn-wrapper-bg { top: 1.2rem; }
-        .btn-wrapper-confetti { top: 4.2rem; }
 
         /* Toggle buttons */
         .toggle-bg-btn {
@@ -81,16 +114,21 @@ function App() {
           box-shadow: 0 6px 25px rgba(240, 147, 251, 0.25);
           color: #7c3aed;
         }
-        body.matrix-bg .toggle-bg-btn {
-          border-color: rgba(0, 255, 0, 0.5);
+
+        /* Dark mode button styles */
+        body.matrix-bg .toggle-bg-btn,
+        body.dark-bg .toggle-bg-btn {
+          border-color: rgba(255, 255, 255, 0.3);
           background: rgba(0, 0, 0, 0.4);
-          color: #00ff00;
-          box-shadow: 0 4px 15px rgba(0, 255, 0, 0.15);
+          color: rgba(255, 255, 255, 0.85);
+          box-shadow: 0 4px 15px rgba(255, 255, 255, 0.08);
         }
-        body.matrix-bg .toggle-bg-btn:hover {
-          border-color: #00ff00;
+        body.matrix-bg .toggle-bg-btn:hover,
+        body.dark-bg .toggle-bg-btn:hover {
+          border-color: rgba(255, 255, 255, 0.6);
           background: rgba(0, 0, 0, 0.6);
-          box-shadow: 0 6px 25px rgba(0, 255, 0, 0.3);
+          box-shadow: 0 6px 25px rgba(255, 255, 255, 0.15);
+          color: #fff;
         }
 
         /* Confetti button color */
@@ -104,12 +142,14 @@ function App() {
           color: #d97706 !important;
           box-shadow: 0 6px 25px rgba(245, 158, 11, 0.3) !important;
         }
-        body.matrix-bg .confetti-btn {
+        body.matrix-bg .confetti-btn,
+        body.dark-bg .confetti-btn {
           border-color: rgba(255, 215, 0, 0.5) !important;
           color: #ffd700 !important;
           box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15) !important;
         }
-        body.matrix-bg .confetti-btn:hover {
+        body.matrix-bg .confetti-btn:hover,
+        body.dark-bg .confetti-btn:hover {
           border-color: #ffd700 !important;
           box-shadow: 0 6px 25px rgba(255, 215, 0, 0.3) !important;
         }
@@ -138,45 +178,63 @@ function App() {
         .btn-wrapper:hover .copy-tooltip {
           display: block;
         }
-        body.matrix-bg .copy-tooltip {
+        body.matrix-bg .copy-tooltip,
+        body.dark-bg .copy-tooltip {
           background: rgba(0, 0, 0, 0.7);
-          border-color: rgba(0, 255, 0, 0.3);
-          color: #00ff00;
+          border-color: rgba(255, 255, 255, 0.2);
+          color: rgba(255, 255, 255, 0.85);
         }
-        body.matrix-bg .copy-tooltip:hover {
-          background: rgba(0, 255, 0, 0.15);
-          border-color: #00ff00;
+        body.matrix-bg .copy-tooltip:hover,
+        body.dark-bg .copy-tooltip:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Background label */
+        .bg-label {
+          position: fixed;
+          bottom: 1.2rem;
+          right: 1.2rem;
+          z-index: 100;
+          padding: 0.4rem 1rem;
+          border-radius: 25px;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: rgba(100, 100, 100, 0.7);
+          font-family: 'Poppins', sans-serif;
+          font-size: 0.7rem;
+          font-weight: 400;
+          letter-spacing: 0.5px;
+        }
+        body.matrix-bg .bg-label,
+        body.dark-bg .bg-label {
+          color: rgba(255, 255, 255, 0.4);
         }
       `}</style>
 
-      {isMatrix ? <MatrixBackground /> : <Particles />}
+      <ActiveBackground />
       <ConfettiEffect
         trigger={confettiTrigger}
         onComplete={() => setConfettiTrigger(false)}
       />
 
       {/* Nút Thay đổi nền */}
-      <div className="btn-wrapper btn-wrapper-bg">
-        <button
-          className="toggle-bg-btn"
-          onClick={() => setIsMatrix(!isMatrix)}
-        >
+      <div className="btn-wrapper" style={{ top: '1.2rem' }}>
+        <button className="toggle-bg-btn" onClick={nextBg}>
           {copiedId === 'bg' ? '✅ Đã copy!' : '🎨 Thay đổi nền'}
         </button>
         <button
           className="copy-tooltip"
-          onClick={() => handleCopyFile('bg', isMatrix ? MatrixBgRaw : ParticlesRaw)}
+          onClick={() => handleCopyFile('bg', rawFiles[currentBg.id])}
         >
           📋 Copy file này
         </button>
       </div>
 
       {/* Nút Hiệu ứng pháo hoa */}
-      <div className="btn-wrapper btn-wrapper-confetti">
-        <button
-          className="toggle-bg-btn confetti-btn"
-          onClick={handleConfetti}
-        >
+      <div className="btn-wrapper" style={{ top: '4.2rem' }}>
+        <button className="toggle-bg-btn confetti-btn" onClick={handleConfetti}>
           {copiedId === 'confetti' ? '✅ Đã copy!' : '🎆 Hiệu ứng pháo hoa'}
         </button>
         <button
@@ -188,6 +246,11 @@ function App() {
       </div>
 
       <CopyZoomCursor />
+
+      {/* Tên nền hiện tại */}
+      <div className="bg-label">
+        {currentBg.label}
+      </div>
     </>
   )
 }

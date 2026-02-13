@@ -15,9 +15,6 @@ export default function CopyZoomCursor() {
         <>
             <style>{`
         .copy-zoom-btn {
-          position: fixed;
-          right: 1.2rem;
-          top: 7.2rem !important;
           border-color: rgba(34, 197, 94, 0.5) !important;
           color: #166534 !important;
           box-shadow: 0 4px 15px rgba(34, 197, 94, 0.15) !important;
@@ -27,18 +24,20 @@ export default function CopyZoomCursor() {
           color: #15803d !important;
           box-shadow: 0 6px 25px rgba(34, 197, 94, 0.3) !important;
         }
-        body.matrix-bg .copy-zoom-btn {
+        body.matrix-bg .copy-zoom-btn,
+        body.dark-bg .copy-zoom-btn {
           border-color: rgba(0, 255, 170, 0.5) !important;
           color: #00ffaa !important;
           box-shadow: 0 4px 15px rgba(0, 255, 170, 0.15) !important;
         }
-        body.matrix-bg .copy-zoom-btn:hover {
+        body.matrix-bg .copy-zoom-btn:hover,
+        body.dark-bg .copy-zoom-btn:hover {
           border-color: #00ffaa !important;
           box-shadow: 0 6px 25px rgba(0, 255, 170, 0.3) !important;
         }
       `}</style>
             <button
-                className="toggle-bg-btn copy-zoom-btn"
+                className="toggle-bg-btn copy-zoom-btn fixed right-[1.2rem] top-[7.2rem] z-100"
                 onClick={handleCopy}
             >
                 {copied ? '✅ Đã copy!' : '🔍 Zoom + Cursor'}
