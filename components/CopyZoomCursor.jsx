@@ -15,6 +15,8 @@ export default function CopyZoomCursor() {
         <>
             <style>{`
         .copy-zoom-btn {
+          position: fixed;
+          right: 1.2rem;
           top: 7.2rem !important;
           border-color: rgba(34, 197, 94, 0.5) !important;
           color: #166534 !important;
